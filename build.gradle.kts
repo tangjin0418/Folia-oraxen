@@ -46,7 +46,6 @@ allprojects {
         maven("https://libraries.minecraft.net/") // Minecraft repo (commodore)
         maven("https://repo.extendedclip.com/content/repositories/placeholderapi/") // PlaceHolderAPI
         maven("https://maven.elmakers.com/repository/") // EffectLib
-        maven("https://hub.jeff-media.com/nexus/repository/jeff-media-public/") // CustomBlockData
         maven("https://repo.triumphteam.dev/snapshots") // actions-code, actions-spigot
         maven("https://mvn.lumine.io/repository/maven-public/") { metadataSources { artifact() } }// MythicMobs
         maven("https://s01.oss.sonatype.org/content/repositories/snapshots") // commandAPI snapshots
@@ -97,7 +96,7 @@ allprojects {
         implementation("org.glassfish:javax.json:1.1.4")
         implementation("io.th0rgal:protectionlib:1.8.0")
         implementation("com.github.stefvanschie.inventoryframework:IF:0.10.12")
-        implementation("com.jeff-media:custom-block-data:2.2.2")
+        implementation("com.jeff-media:custom-block-data:2.2.3-Folia")
         implementation("com.jeff-media:MorePersistentDataTypes:2.4.0")
         implementation("com.jeff-media:persistent-data-serializer:1.0")
         implementation("org.jetbrains:annotations:24.1.0") { isTransitive = false }
@@ -158,6 +157,7 @@ tasks {
         SUPPORTED_VERSIONS.forEach { dependsOn(":${it.nmsVersion}:reobfJar") }
 
         archiveClassifier = null
+        relocate("org.tjdev.util", "org.tjdev.modified.oraxen.lib")
         relocate("org.bstats", "io.th0rgal.oraxen.shaded.bstats")
         relocate("dev.triumphteam.gui", "io.th0rgal.oraxen.shaded.triumphteam.gui")
         relocate("com.jeff_media", "io.th0rgal.oraxen.shaded.jeff_media")
@@ -207,7 +207,7 @@ bukkit {
         "ProtocolLib",
         "LightAPI", "PlaceholderAPI", "MythicMobs", "MMOItems", "MythicCrucible", "MythicMobs", "BossShopPro",
         "CrateReloaded", "ItemBridge", "WorldEdit", "WorldGuard", "Towny", "Factions", "Lands", "PlotSquared",
-        "NBTAPI", "ModelEngine", "ViaBackwards", "HuskClaims", "HuskTowns", "BentoBox"
+        "NBTAPI", "ModelEngine", "ViaBackwards", "HuskClaims", "HuskTowns", "BentoBox", "Residence"
     )
     loadBefore = listOf("Realistic_World")
     permissions.create("oraxen.command") {

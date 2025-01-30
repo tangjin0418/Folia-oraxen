@@ -10,7 +10,6 @@ val pluginVersion = project.property("pluginVersion") as String
 tasks {
     //publish.get().dependsOn(shadowJar)
     shadowJar.get().archiveFileName.set("oraxen-${pluginVersion}.jar")
-    shadowJar.get().relocate("org.tjdev.util", "org.tjdev.modified.oraxen.lib")
     build.get().dependsOn(shadowJar)
 }
 
