@@ -27,7 +27,6 @@ import io.th0rgal.oraxen.utils.armorequipevent.ArmorEquipEvent;
 import io.th0rgal.oraxen.utils.breaker.BreakerSystem;
 import io.th0rgal.oraxen.utils.customarmor.CustomArmorListener;
 import io.th0rgal.oraxen.utils.inventories.InvManager;
-import io.th0rgal.oraxen.utils.logs.Logs;
 import io.th0rgal.protectionlib.ProtectionLib;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bstats.bukkit.Metrics;
@@ -36,6 +35,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 
 import java.io.IOException;
 import java.util.jar.JarFile;
@@ -134,7 +134,7 @@ public class OraxenPlugin extends JavaPlugin {
     private void postLoading() {
         new Metrics(this, 5371);
         new LU().l();
-        Bukkit.getScheduler().runTask(this, () -> Bukkit.getPluginManager().callEvent(new OraxenItemsLoadedEvent()));
+        FoliaUtil.scheduler.runTask(() -> Bukkit.getPluginManager().callEvent(new OraxenItemsLoadedEvent()));
     }
 
     @Override

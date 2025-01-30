@@ -16,10 +16,11 @@ import org.bukkit.entity.Entity;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.tjdev.util.tjpluginutil.spigot.scheduler.universalscheduler.UniversalRunnable;
 
 import static io.th0rgal.oraxen.mechanics.provided.gameplay.furniture.FurnitureMechanic.EVOLUTION_KEY;
 
-public class EvolutionTask extends BukkitRunnable {
+public class EvolutionTask extends UniversalRunnable {
 
     private final FurnitureFactory furnitureFactory;
     private final int delay;

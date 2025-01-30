@@ -10,15 +10,18 @@ val pluginVersion = project.property("pluginVersion") as String
 tasks {
     //publish.get().dependsOn(shadowJar)
     shadowJar.get().archiveFileName.set("oraxen-${pluginVersion}.jar")
+    shadowJar.get().relocate("org.tjdev.util", "org.tjdev.modified.oraxen.lib")
     build.get().dependsOn(shadowJar)
 }
 
 repositories {
     maven("https://repo.papermc.io/repository/maven-public/") // Paper
+    mavenLocal()
 }
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT")
+    implementation("org.tjdev.util.tjpluginutil:spigot:1.0-SNAPSHOT")
 }
 
 java {
@@ -42,8 +45,10 @@ publishing {
         maven {
             authentication {
                 credentials(PasswordCredentials::class) {
-                    username = System.getenv("MAVEN_USERNAME") ?: project.findProperty("oraxenUsername") as? String ?: ""
-                    password = System.getenv("MAVEN_PASSWORD") ?: project.findProperty("oraxenPassword") as? String ?: ""
+                    username =
+                        System.getenv("MAVEN_USERNAME") ?: project.findProperty("oraxenUsername") as? String ?: ""
+                    password =
+                        System.getenv("MAVEN_PASSWORD") ?: project.findProperty("oraxenPassword") as? String ?: ""
                 }
                 authentication {
                     create<BasicAuthentication>("basic")
@@ -75,7 +80,8 @@ class PublishData(private val project: Project) {
         System.getenv("GITHUB_SHA")?.substring(0, hashLength) ?: "local"
 
     private fun getCheckedOutBranch(): String =
-        System.getenv("GITHUB_REF")?.replace("refs/heads/", "") ?: grgitService.service.get().grgit.branch.current().name
+        System.getenv("GITHUB_REF")?.replace("refs/heads/", "")
+            ?: grgitService.service.get().grgit.branch.current().name
 
     fun getVersion(): String = getVersion(false)
 

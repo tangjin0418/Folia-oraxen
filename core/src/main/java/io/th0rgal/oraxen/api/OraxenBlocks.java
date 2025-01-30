@@ -28,6 +28,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -44,7 +45,9 @@ public class OraxenBlocks {
      * @return A set of all OraxenItem ID's that have either a NoteBlockMechanic or a StringBlockMechanic
      */
     public static Set<String> getBlockIDs() {
-        return Arrays.stream(OraxenItems.getItemNames()).filter(OraxenBlocks::isOraxenBlock).collect(Collectors.toSet());
+        return Arrays.stream(OraxenItems.getItemNames())
+                     .filter(OraxenBlocks::isOraxenBlock)
+                     .collect(Collectors.toSet());
     }
 
     /**
@@ -53,7 +56,9 @@ public class OraxenBlocks {
      * @return A set of all OraxenItem ID's that have a NoteBlockMechanic
      */
     public static Set<String> getNoteBlockIDs() {
-        return Arrays.stream(OraxenItems.getItemNames()).filter(OraxenBlocks::isOraxenNoteBlock).collect(Collectors.toSet());
+        return Arrays.stream(OraxenItems.getItemNames())
+                     .filter(OraxenBlocks::isOraxenNoteBlock)
+                     .collect(Collectors.toSet());
     }
 
     /**
@@ -62,7 +67,9 @@ public class OraxenBlocks {
      * @return A set of all OraxenItem ID's that have a StringBlockMechanic
      */
     public static Set<String> getStringBlockIDs() {
-        return Arrays.stream(OraxenItems.getItemNames()).filter(OraxenBlocks::isOraxenStringBlock).collect(Collectors.toSet());
+        return Arrays.stream(OraxenItems.getItemNames())
+                     .filter(OraxenBlocks::isOraxenStringBlock)
+                     .collect(Collectors.toSet());
     }
 
     /**
@@ -88,7 +95,7 @@ public class OraxenBlocks {
      */
     public static boolean isOraxenBlock(String itemId) {
         return OraxenItems.hasMechanic(itemId, "noteblock")
-                || OraxenItems.hasMechanic(itemId, "stringblock");
+               || OraxenItems.hasMechanic(itemId, "stringblock");
     }
 
     /**
@@ -132,7 +139,8 @@ public class OraxenBlocks {
      * @return true if the itemID has a StringBlockMechanic, otherwise false
      */
     public static boolean isOraxenStringBlock(String itemID) {
-        return StringBlockMechanicFactory.isEnabled() && !StringBlockMechanicFactory.getInstance().isNotImplementedIn(itemID);
+        return StringBlockMechanicFactory.isEnabled() && !StringBlockMechanicFactory.getInstance()
+                                                                                    .isNotImplementedIn(itemID);
     }
 
     public static void place(String itemID, Location location) {
@@ -233,7 +241,11 @@ public class OraxenBlocks {
 
         NoteBlockMechanic noteMechanic = getNoteBlockMechanic(block);
         StringBlockMechanic stringMechanic = getStringMechanic(block);
-        Drop overrideDrop = !forceDrop ? null : noteMechanic != null ? noteMechanic.getDrop() : stringMechanic != null ? stringMechanic.getDrop() : null;
+        Drop overrideDrop = !forceDrop ?
+                            null :
+                            noteMechanic != null ?
+                            noteMechanic.getDrop() :
+                            stringMechanic != null ? stringMechanic.getDrop() : null;
         return remove(location, player, overrideDrop);
     }
 
@@ -306,7 +318,8 @@ public class OraxenBlocks {
             else if (hasDropOverride || player.getGameMode() != GameMode.CREATIVE)
                 drop = wireBlockBreakEvent.getDrop();
 
-            if (VersionUtil.isPaperServer()) block.getWorld().sendGameEvent(player, GameEvent.BLOCK_DESTROY, block.getLocation().toVector());
+            if (VersionUtil.isPaperServer())
+                block.getWorld().sendGameEvent(player, GameEvent.BLOCK_DESTROY, block.getLocation().toVector());
         }
         if (drop != null) drop.spawns(block.getLocation(), itemInHand);
 
@@ -314,7 +327,7 @@ public class OraxenBlocks {
         if (mechanic.hasLight()) mechanic.getLight().removeBlockLight(block);
         if (mechanic.isTall()) blockAbove.setType(Material.AIR);
         block.setType(Material.AIR);
-        Bukkit.getScheduler().runTaskLater(OraxenPlugin.get(), () -> {
+        FoliaUtil.scheduler.runTaskLater(blockAbove.getLocation(), () -> {
             StringBlockMechanicListener.fixClientsideUpdate(block.getLocation());
             if (blockAbove.getType() == Material.TRIPWIRE)
                 removeStringBlock(blockAbove, player, overrideDrop);
@@ -331,12 +344,12 @@ public class OraxenBlocks {
      */
     public static Mechanic getOraxenBlock(Location location) {
         return !isOraxenBlock(location.getBlock()) ? null :
-                switch (location.getBlock().getType()) {
-                    case NOTE_BLOCK -> getNoteBlockMechanic(location.getBlock());
-                    case TRIPWIRE -> getStringMechanic(location.getBlock());
-                    case MUSHROOM_STEM -> getBlockMechanic(location.getBlock());
-                    default -> null;
-                };
+               switch (location.getBlock().getType()) {
+                   case NOTE_BLOCK -> getNoteBlockMechanic(location.getBlock());
+                   case TRIPWIRE -> getStringMechanic(location.getBlock());
+                   case MUSHROOM_STEM -> getBlockMechanic(location.getBlock());
+                   default -> null;
+               };
     }
 
     public static Mechanic getOraxenBlock(BlockData blockData) {
@@ -352,7 +365,7 @@ public class OraxenBlocks {
         if (!(data instanceof NoteBlock noteBlock)) return null;
         return NoteBlockMechanicFactory
                 .getBlockMechanic((noteBlock.getInstrument().getType()) * 25
-                        + noteBlock.getNote().getId() + (noteBlock.isPowered() ? 400 : 0) - 26);
+                                  + noteBlock.getNote().getId() + (noteBlock.isPowered() ? 400 : 0) - 26);
     }
 
     public static NoteBlockMechanic getNoteBlockMechanic(Block block) {
@@ -361,7 +374,7 @@ public class OraxenBlocks {
         final NoteBlock noteblock = (NoteBlock) block.getBlockData();
         return NoteBlockMechanicFactory
                 .getBlockMechanic((noteblock.getInstrument().getType()) * 25
-                        + noteblock.getNote().getId() + (noteblock.isPowered() ? 400 : 0) - 26);
+                                  + noteblock.getNote().getId() + (noteblock.isPowered() ? 400 : 0) - 26);
     }
 
     @org.jetbrains.annotations.Nullable

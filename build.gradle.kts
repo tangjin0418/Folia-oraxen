@@ -14,14 +14,9 @@ plugins {
 }
 
 class NMSVersion(val nmsVersion: String, val serverVersion: String)
+
 infix fun String.toNms(that: String): NMSVersion = NMSVersion(this, that)
 val SUPPORTED_VERSIONS: List<NMSVersion> = listOf(
-    "v1_20_R1" toNms "1.20.1-R0.1-SNAPSHOT",
-    "v1_20_R2" toNms "1.20.2-R0.1-SNAPSHOT",
-    "v1_20_R3" toNms "1.20.4-R0.1-SNAPSHOT",
-    "v1_20_R4" toNms "1.20.6-R0.1-SNAPSHOT",
-    "v1_21_R1" toNms "1.21.1-R0.1-SNAPSHOT",
-    "v1_21_R2" toNms "1.21.3-R0.1-SNAPSHOT",
     "v1_21_R3" toNms "1.21.4-R0.1-SNAPSHOT"
 )
 
@@ -136,7 +131,16 @@ tasks {
     }
 
     processResources {
-        filesNotMatching(listOf("**/*.png", "**/*.ogg", "**/models/**", "**/textures/**", "**/font/**.json", "**/plugin.yml")) {
+        filesNotMatching(
+            listOf(
+                "**/*.png",
+                "**/*.ogg",
+                "**/models/**",
+                "**/textures/**",
+                "**/font/**.json",
+                "**/plugin.yml"
+            )
+        ) {
             expand(mapOf(project.version.toString() to pluginVersion))
         }
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
@@ -170,8 +174,16 @@ tasks {
                     "Version" to pluginVersion,
                     "Build-Timestamp" to SimpleDateFormat("yyyy-MM-dd' 'HH:mm:ss.SSSZ").format(Date.from(Instant.now())),
                     "Created-By" to "Gradle ${gradle.gradleVersion}",
-                    "Build-Jdk" to "${System.getProperty("java.version")} ${System.getProperty("java.vendor")} ${System.getProperty("java.vm.version")}",
-                    "Build-OS" to "${System.getProperty("os.name")} ${System.getProperty("os.arch")} ${System.getProperty("os.version")}",
+                    "Build-Jdk" to "${System.getProperty("java.version")} ${System.getProperty("java.vendor")} ${
+                        System.getProperty(
+                            "java.vm.version"
+                        )
+                    }",
+                    "Build-OS" to "${System.getProperty("os.name")} ${System.getProperty("os.arch")} ${
+                        System.getProperty(
+                            "os.version"
+                        )
+                    }",
                     "Compiled" to (project.findProperty("oraxen_compiled")?.toString() ?: "true").toBoolean()
                 )
             )
@@ -214,6 +226,7 @@ bukkit {
         "org.apache.commons:commons-lang3:$apacheLang3Version",
         "gs.mclo:java:2.2.1",
     )
+    foliaSupported = true
 }
 
 if (spigotPluginPath != null) {

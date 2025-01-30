@@ -14,6 +14,7 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 
 public class EfficiencyMechanicListener extends PacketAdapter {
 
@@ -44,13 +45,14 @@ public class EfficiencyMechanicListener extends PacketAdapter {
             type = EnumWrappers.PlayerDigType.SWAP_HELD_ITEMS;
         }
         if (type == EnumWrappers.PlayerDigType.START_DESTROY_BLOCK)
-            Bukkit.getScheduler().runTask(OraxenPlugin.get(), () ->
+            FoliaUtil.scheduler.runTask(player, () ->
                     player.addPotionEffect(new PotionEffect(mechanic.getType(),
                             20 * 60 * 5,
                             mechanic.getAmount() - 1,
-                            false, false, false)));
+                            false, false, false
+                    )));
         else
-            Bukkit.getScheduler().runTask(OraxenPlugin.get(), () ->
+            FoliaUtil.scheduler.runTask(player, () ->
                     player.removePotionEffect(mechanic.getType()));
     }
 

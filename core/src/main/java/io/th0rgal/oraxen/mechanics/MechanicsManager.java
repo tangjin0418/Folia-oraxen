@@ -43,6 +43,8 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
+import org.tjdev.util.tjpluginutil.spigot.scheduler.universalscheduler.scheduling.tasks.MyScheduledTask;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +54,7 @@ import java.util.Map.Entry;
 public class MechanicsManager {
 
     private static final Map<String, MechanicFactory> FACTORIES_BY_MECHANIC_ID = new HashMap<>();
-    public static final Map<String, List<Integer>> MECHANIC_TASKS = new HashMap<>();
+    public static final Map<String, List<MyScheduledTask>> MECHANIC_TASKS = new HashMap<>();
     private static final Map<String, List<Listener>> MECHANICS_LISTENERS = new HashMap<>();
 
     public static void registerNativeMechanics() {
@@ -100,7 +102,7 @@ public class MechanicsManager {
         if (CompatibilitiesManager.hasPlugin("ProtocolLib"))
             registerFactory("bedrockbreak", BedrockBreakMechanicFactory::new);
 
-        Bukkit.getScheduler().callSyncMethod(OraxenPlugin.get(), () -> {
+        FoliaUtil.scheduler.callSyncMethod(() -> {
             Bukkit.getPluginManager().callEvent(new OraxenNativeMechanicsRegisteredEvent());
             return null;
         });
@@ -136,7 +138,9 @@ public class MechanicsManager {
     }
 
     private static void registerFactory(final String mechanicId, final FactoryConstructor constructor) {
-        final Entry<File, YamlConfiguration> mechanicsEntry = OraxenPlugin.get().getResourceManager().getMechanicsEntry();
+        final Entry<File, YamlConfiguration> mechanicsEntry = OraxenPlugin.get()
+                                                                          .getResourceManager()
+                                                                          .getMechanicsEntry();
         final YamlConfiguration mechanicsConfig = mechanicsEntry.getValue();
         final boolean updated = false;
         ConfigurationSection factorySection = mechanicsConfig.getConfigurationSection(mechanicId);
@@ -150,22 +154,22 @@ public class MechanicsManager {
         }
     }
 
-    public static void registerTask(String mechanicId, BukkitTask task) {
+    public static void registerTask(String mechanicId, MyScheduledTask task) {
         MECHANIC_TASKS.compute(mechanicId, (key, value) -> {
             if (value == null) value = new ArrayList<>();
-            value.add(task.getTaskId());
+            value.add(task);
             return value;
         });
     }
 
     public static void unregisterTasks() {
-        MECHANIC_TASKS.values().forEach(tasks -> tasks.forEach(Bukkit.getScheduler()::cancelTask));
+        MECHANIC_TASKS.values().forEach(tasks -> tasks.forEach(MyScheduledTask::cancel));
         MECHANIC_TASKS.clear();
     }
 
     public static void unregisterTasks(String mechanicId) {
         MECHANIC_TASKS.computeIfPresent(mechanicId, (key, value) -> {
-            value.forEach(Bukkit.getScheduler()::cancelTask);
+            value.forEach(MyScheduledTask::cancel);
             return Collections.emptyList();
         });
     }

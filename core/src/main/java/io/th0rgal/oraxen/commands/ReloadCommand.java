@@ -23,6 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.jetbrains.annotations.Nullable;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 
 public class ReloadCommand {
 
@@ -36,7 +37,7 @@ public class ReloadCommand {
             Message.UPDATING_USER_ITEMS.log();
             for (Player player : Bukkit.getServer().getOnlinePlayers()) {
                 PlayerInventory inventory = player.getInventory();
-                Bukkit.getScheduler().runTaskAsynchronously(OraxenPlugin.get(), () -> {
+                FoliaUtil.scheduler.runTaskAsynchronously( () -> {
                     for (int i = 0; i < inventory.getSize(); i++) {
                         ItemStack oldItem = inventory.getItem(i);
                         ItemStack newItem = ItemUpdater.updateItem(oldItem);

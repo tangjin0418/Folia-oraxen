@@ -33,6 +33,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.util.RayTraceResult;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 
 import java.util.List;
 import java.util.Objects;
@@ -78,7 +79,7 @@ public class StringBlockMechanicListener implements Listener {
                     continue;
 
                 final BlockData data = changed.getBlockData().clone();
-                Bukkit.getScheduler().runTaskLater(OraxenPlugin.get(), () -> changed.setBlockData(data, false), 1L);
+                FoliaUtil.scheduler.runTaskLater(changed.getLocation(), () -> changed.setBlockData(data, false), 1L);
             }
         }
 
@@ -120,8 +121,8 @@ public class StringBlockMechanicListener implements Listener {
                         block.setType(Material.AIR);
                     if (BlockHelpers.isReplaceable(blockAbove.getType()))
                         blockAbove.breakNaturally(true);
-                    Bukkit.getScheduler().runTaskLater(OraxenPlugin.get(),
-                            Runnable -> fixClientsideUpdate(block.getLocation()), 1);
+                    FoliaUtil.scheduler.runTaskLater(block.getLocation(),
+                            () -> fixClientsideUpdate(block.getLocation()), 1);
                 }
             }
         }
@@ -247,8 +248,8 @@ public class StringBlockMechanicListener implements Listener {
 
                 makePlayerPlaceBlock(player, event.getHand(), item, placedAgainst, event.getBlockFace(),
                         Bukkit.createBlockData(item.getType()));
-                Bukkit.getScheduler().runTaskLater(OraxenPlugin.get(),
-                        Runnable -> fixClientsideUpdate(placedAgainst.getLocation()), 1L);
+                FoliaUtil.scheduler.runTaskLater(placedAgainst.getLocation(),
+                        () -> fixClientsideUpdate(placedAgainst.getLocation()), 1L);
             }
         }
 

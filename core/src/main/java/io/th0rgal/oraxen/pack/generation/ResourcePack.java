@@ -25,9 +25,9 @@ import io.th0rgal.oraxen.utils.customarmor.TrimArmorDatapack;
 import io.th0rgal.oraxen.utils.logs.Logs;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -62,7 +62,7 @@ public class ResourcePack {
         makeDirsIfNotExists(packFolder, new File(packFolder, "assets"));
 
         componentArmorModels = CustomArmorType.getSetting() == CustomArmorType.COMPONENT ? new ComponentArmorModels()
-                : null;
+                                                                                         : null;
         trimArmorDatapack = CustomArmorType.getSetting() == CustomArmorType.TRIMS ? new TrimArmorDatapack() : null;
         shaderArmorTextures = CustomArmorType.getSetting() == CustomArmorType.SHADER ? new ShaderArmorTextures() : null;
 
@@ -105,7 +105,7 @@ public class ResourcePack {
         if (Settings.TEXTURE_SLICER.toBool())
             PackSlicer.slicePackFiles();
         if (CustomArmorType.getSetting() == CustomArmorType.SHADER
-                && Settings.CUSTOM_ARMOR_SHADER_GENERATE_FILES.toBool())
+            && Settings.CUSTOM_ARMOR_SHADER_GENERATE_FILES.toBool())
             ShaderArmorTextures.generateArmorShaderFiles();
 
         for (final Collection<Consumer<File>> packModifiers : packModifiers.values())
@@ -125,7 +125,8 @@ public class ResourcePack {
                     if (!folder.isDirectory())
                         continue;
                     getAllFiles(folder, output,
-                            folder.getName().matches("models|textures|lang|font|sounds") ? "assets/minecraft" : "");
+                            folder.getName().matches("models|textures|lang|font|sounds") ? "assets/minecraft" : ""
+                    );
                 }
 
             // Convert the global.json within the lang-folder to all languages
@@ -164,7 +165,7 @@ public class ResourcePack {
 
         generateSound(output);
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(OraxenPlugin.get(), () -> {
+        FoliaUtil.scheduler.runTask(() -> {
             OraxenPackGeneratedEvent event = new OraxenPackGeneratedEvent(output);
             EventUtils.callEvent(event);
             ZipUtils.writeZipFile(pack, event.getOutput());
@@ -234,14 +235,14 @@ public class ResourcePack {
                 }
                 if (jsonModel.has("textures")) {
                     for (JsonElement element : jsonModel.getAsJsonObject("textures").entrySet().stream()
-                            .map(Map.Entry::getValue).toList()) {
+                                                        .map(Map.Entry::getValue).toList()) {
                         String jsonTexture = element.getAsString();
                         if (!texturePaths.contains(modelPathToPackPath(jsonTexture))) {
                             if (!jsonTexture.startsWith("#") && !jsonTexture.startsWith("item/")
-                                    && !jsonTexture.startsWith("block/") && !jsonTexture.startsWith("entity/")) {
+                                && !jsonTexture.startsWith("block/") && !jsonTexture.startsWith("entity/")) {
                                 if (Material.matchMaterial(Utils.getFileNameOnly(jsonTexture).toUpperCase()) == null) {
                                     Logs.logWarning("Found invalid texture-path inside model-file <blue>"
-                                            + model.getPath() + "</blue>: " + jsonTexture);
+                                                    + model.getPath() + "</blue>: " + jsonTexture);
                                     Logs.logWarning("Verify that you have a texture in said path.", true);
                                     malformedModels.add(model);
                                 }
@@ -347,10 +348,12 @@ public class ResourcePack {
             ZipEntry entry = zip.getNextEntry();
             while (entry != null) {
                 if (entry.getName().startsWith("pack/textures/models/armor/leather_layer_")
-                        || entry.getName().startsWith("pack/textures/required")
-                        || entry.getName().startsWith("pack/models/required")) {
-                    OraxenPlugin.get().getResourceManager().extractFileIfTrue(entry,
-                            !OraxenPlugin.get().getDataFolder().toPath().resolve(entry.getName()).toFile().exists());
+                    || entry.getName().startsWith("pack/textures/required")
+                    || entry.getName().startsWith("pack/models/required")) {
+                    OraxenPlugin.get().getResourceManager().extractFileIfTrue(
+                            entry,
+                            !OraxenPlugin.get().getDataFolder().toPath().resolve(entry.getName()).toFile().exists()
+                    );
                 }
                 entry = zip.getNextEntry();
             }
@@ -378,8 +381,10 @@ public class ResourcePack {
                 if (oraxenMeta.shouldGenerateModel()) {
                     writeStringToVirtual(modelPath, modelName, new ModelGenerator(oraxenMeta).getJson().toString());
                 }
-                final Map<String, ItemBuilder> items = texturedItems.computeIfAbsent(item.build().getType(),
-                        k -> new LinkedHashMap<>());
+                final Map<String, ItemBuilder> items = texturedItems.computeIfAbsent(
+                        item.build().getType(),
+                        k -> new LinkedHashMap<>()
+                );
 
                 // Insert in order of CustomModelData
                 List<Map.Entry<String, ItemBuilder>> sortedItems = new ArrayList<>(items.entrySet());
@@ -445,12 +450,15 @@ public class ResourcePack {
     private void generatePredicates(final Map<Material, Map<String, ItemBuilder>> texturedItems) {
         for (final Map.Entry<Material, Map<String, ItemBuilder>> texturedItemsEntry : texturedItems.entrySet()) {
             final Material entryMaterial = texturedItemsEntry.getKey();
-            final PredicatesGenerator predicatesGenerator = new PredicatesGenerator(entryMaterial,
-                    new ArrayList<>(texturedItemsEntry.getValue().values()));
+            final PredicatesGenerator predicatesGenerator = new PredicatesGenerator(
+                    entryMaterial,
+                    new ArrayList<>(texturedItemsEntry.getValue().values())
+            );
             final String[] vanillaModelPath = (predicatesGenerator.getVanillaModelName(entryMaterial) + ".json")
                     .split("/");
             writeStringToVirtual("assets/minecraft/models/" + vanillaModelPath[0], vanillaModelPath[1],
-                    predicatesGenerator.toJSON().toString());
+                    predicatesGenerator.toJSON().toString()
+            );
         }
     }
 
@@ -463,7 +471,8 @@ public class ResourcePack {
                 if (oraxenMeta.hasPackInfos()) {
                     final ModelDefinitionGenerator modelDefinitionGenerator = new ModelDefinitionGenerator(oraxenMeta);
                     writeStringToVirtual("assets/oraxen/items/", itemId + ".json",
-                            modelDefinitionGenerator.toJSON().toString());
+                            modelDefinitionGenerator.toJSON().toString()
+                    );
                 }
             }
         }
@@ -497,7 +506,8 @@ public class ResourcePack {
             return;
 
         List<VirtualFile> soundFiles = output.stream()
-                .filter(file -> file.getPath().equals("assets/minecraft/sounds.json")).toList();
+                                             .filter(file -> file.getPath().equals("assets/minecraft/sounds.json"))
+                                             .toList();
         JsonObject outputJson = new JsonObject();
 
         // If file was imported by other means, we attempt to merge in sound.yml entries
@@ -535,8 +545,8 @@ public class ResourcePack {
 
         // Initialize JukeboxDatapack with jukebox sounds after processing all sounds
         Collection<CustomSound> jukeboxSounds = customSounds.stream()
-                .filter(CustomSound::isJukeboxSound)
-                .toList();
+                                                            .filter(CustomSound::isJukeboxSound)
+                                                            .toList();
         if (!jukeboxSounds.isEmpty()) {
             JukeboxDatapack jukeboxDatapack = new JukeboxDatapack(jukeboxSounds);
             jukeboxDatapack.clearOldDataPack();
@@ -563,11 +573,11 @@ public class ResourcePack {
                 sounds.removeIf(s -> s.getName().startsWith("required.stone") || s.getName().startsWith("block.stone"));
             }
             if ((noteblock != null && !noteblock.getBoolean("enabled", true) && block != null
-                    && !block.getBoolean("enabled", false))) {
+                 && !block.getBoolean("enabled", false))) {
                 sounds.removeIf(s -> s.getName().startsWith("required.wood") || s.getName().startsWith("block.wood"));
             }
             if (stringblock != null && !stringblock.getBoolean("enabled", true) && furniture != null
-                    && !furniture.getBoolean("enabled", true)) {
+                && !furniture.getBoolean("enabled", true)) {
                 sounds.removeIf(s -> s.getName().startsWith("required.stone") || s.getName().startsWith("block.stone"));
             }
         }
@@ -575,11 +585,11 @@ public class ResourcePack {
         // Clear the sounds.json file of yaml configuration entries that should not be
         // there
         sounds.removeIf(s -> s.getName().equals("required") ||
-                s.getName().equals("block") ||
-                s.getName().equals("block.wood") ||
-                s.getName().equals("block.stone") ||
-                s.getName().equals("required.wood") ||
-                s.getName().equals("required.stone"));
+                             s.getName().equals("block") ||
+                             s.getName().equals("block.wood") ||
+                             s.getName().equals("block.stone") ||
+                             s.getName().equals("required.wood") ||
+                             s.getName().equals("required.stone"));
 
         return sounds;
     }
@@ -621,7 +631,8 @@ public class ResourcePack {
                 fis = new FileInputStream(file);
 
             output.add(new VirtualFile(getZipFilePath(file.getParentFile().getCanonicalPath(), newFolder),
-                    file.getName(), fis));
+                    file.getName(), fis
+            ));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -681,7 +692,7 @@ public class ResourcePack {
             }
             case SHADER -> {
                 if (Settings.CUSTOM_ARMOR_SHADER_GENERATE_CUSTOM_TEXTURES.toBool()
-                        && shaderArmorTextures.hasCustomArmors()) {
+                    && shaderArmorTextures.hasCustomArmors()) {
                     try {
                         String armorPath = "assets/minecraft/textures/models/armor";
                         output.add(
@@ -728,7 +739,7 @@ public class ResourcePack {
             if (langFile.exists()) {
                 try {
                     langJson = JsonParser.parseString(Files.readString(langFile.toPath(), StandardCharsets.UTF_8))
-                            .getAsJsonObject();
+                                         .getAsJsonObject();
                 } catch (IOException | IllegalStateException ignored) {
                 }
             }
@@ -767,7 +778,8 @@ public class ResourcePack {
             "pt_pt", "qya_aa", "ro_ro", "rpr", "ru_ru", "ry_ua", "se_no", "sk_sk",
             "sl_si", "so_so", "sq_al", "sr_sp", "sv_se", "sxu", "szl", "ta_in",
             "th_th", "tl_ph", "tlh_aa", "tok", "tr_tr", "tt_ru", "uk_ua", "val_es",
-            "vec_it", "vi_vn", "yi_de", "yo_ng", "zh_cn", "zh_hk", "zh_tw", "zlm_arab"));
+            "vec_it", "vi_vn", "yi_de", "yo_ng", "zh_cn", "zh_hk", "zh_tw", "zlm_arab"
+    ));
 
     private void hideScoreboardNumbers() {
         if (PluginUtils.isEnabled("ProtocolLib") && VersionUtil.isPaperServer() && VersionUtil.atOrAbove("1.20.3")) {

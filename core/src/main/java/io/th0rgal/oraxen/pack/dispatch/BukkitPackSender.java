@@ -12,6 +12,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 
 public class BukkitPackSender extends PackSender implements Listener {
 
@@ -47,7 +48,7 @@ public class BukkitPackSender extends PackSender implements Listener {
         if (!Settings.SEND_PACK.toBool()) return;
         int delay = (int) Settings.SEND_PACK_DELAY.getValue();
         if (delay <= 0) sendPack(player);
-        else Bukkit.getScheduler().runTaskLaterAsynchronously(OraxenPlugin.get(), () ->
+        else FoliaUtil.scheduler.runTaskLaterAsynchronously(() ->
                 sendPack(player), delay * 20L);
     }
 }

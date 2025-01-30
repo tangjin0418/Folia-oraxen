@@ -35,6 +35,7 @@ import org.bukkit.event.world.GenericGameEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.RayTraceResult;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 
 import java.util.*;
 
@@ -111,7 +112,7 @@ public class NoteBlockMechanicListener implements Listener {
             if (event.getEvent() != GameEvent.NOTE_BLOCK_PLAY) return;
             if (block.getType() != Material.NOTE_BLOCK) return;
             NoteBlock data = (NoteBlock) block.getBlockData().clone();
-            Bukkit.getScheduler().runTaskLater(OraxenPlugin.get(), () -> block.setBlockData(data, false), 1L);
+            FoliaUtil.scheduler.runTaskLater(block.getLocation(), () -> block.setBlockData(data, false), 1L);
         }
 
         public void updateAndCheck(Block block) {

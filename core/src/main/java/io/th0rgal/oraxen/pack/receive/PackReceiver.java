@@ -14,6 +14,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import org.jetbrains.annotations.NotNull;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 
 import java.time.Duration;
 
@@ -35,7 +36,7 @@ public class PackReceiver implements Listener {
             case FAILED_RELOAD -> new PackAction(Settings.RECEIVE_FAILED_RELOAD_ACTIONS.toConfigSection(), playerResolver);
             case DISCARDED -> new PackAction(Settings.RECEIVE_DISCARDED_ACTIONS.toConfigSection(), playerResolver);
         };
-        Bukkit.getScheduler().runTaskLater(OraxenPlugin.get(), () -> {
+        FoliaUtil.scheduler.runTaskLater(event.getPlayer(), () -> {
             if (packAction.hasMessage())
                 sendMessage(event.getPlayer(), packAction.getMessageType(), packAction.getMessageContent());
             if (packAction.hasSound())

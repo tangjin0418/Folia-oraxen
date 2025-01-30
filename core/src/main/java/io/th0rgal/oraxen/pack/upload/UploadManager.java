@@ -19,6 +19,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -59,7 +60,7 @@ public class UploadManager {
         }
 
         final long time = System.currentTimeMillis();
-        Bukkit.getScheduler().runTaskAsynchronously(OraxenPlugin.get(), () -> {
+        FoliaUtil.scheduler.runTaskAsynchronously(() -> {
             EventUtils.callEvent(new OraxenPackPreUploadEvent());
 
             Message.PACK_UPLOADING.log();
@@ -69,12 +70,13 @@ public class UploadManager {
             }
 
             OraxenPackUploadEvent uploadEvent = new OraxenPackUploadEvent(hostingProvider);
-            Bukkit.getScheduler().scheduleSyncDelayedTask(OraxenPlugin.get(), () ->
+            FoliaUtil.scheduler.runTask(() ->
                     Bukkit.getPluginManager().callEvent(uploadEvent));
 
             Message.PACK_UPLOADED.log(
                     AdventureUtils.tagResolver("url", hostingProvider.getPackURL()),
-                    AdventureUtils.tagResolver("delay", String.valueOf(System.currentTimeMillis() - time)));
+                    AdventureUtils.tagResolver("delay", String.valueOf(System.currentTimeMillis() - time))
+            );
 
             if (packSender == null) packSender = new BukkitPackSender(hostingProvider);
             else if (updatePackSender) {
@@ -132,7 +134,7 @@ public class UploadManager {
 
         try {
             return constructor.getParameterCount() == 0 ? constructor.newInstance()
-                    : constructor.newInstance(options);
+                                                        : constructor.newInstance(options);
         } catch (final InstantiationException e) {
             throw (ProviderNotFoundException) new ProviderNotFoundException("Cannot alloc instance for " + target)
                     .initCause(e);
@@ -152,7 +154,8 @@ public class UploadManager {
         Constructor<? extends HostingProvider> constructor = null;
         for (final Constructor<?> implementConstructor : implement.getConstructors()) {
             Parameter[] parameters = implementConstructor.getParameters();
-            if (parameters.length == 0 || (parameters.length == 1 && parameters[0].getType().equals(ConfigurationSection.class))) {
+            if (parameters.length == 0 || (parameters.length == 1 && parameters[0].getType()
+                                                                                  .equals(ConfigurationSection.class))) {
                 constructor = (Constructor<? extends HostingProvider>) implementConstructor;
                 break;
             }
@@ -161,7 +164,6 @@ public class UploadManager {
         if (constructor == null) throw new ProviderNotFoundException("Invalid provider: " + target);
         return constructor;
     }
-
 
 
 }

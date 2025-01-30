@@ -27,6 +27,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.jetbrains.annotations.Nullable;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 
 import java.util.*;
 
@@ -258,7 +259,7 @@ public class StorageMechanic {
         // Slight delay to catch stacks sometimes moving too fast
         gui.setDefaultClickAction(event -> {
             if (event.getCursor() != null && event.getCursor().getType() != Material.AIR || event.getCurrentItem() != null) {
-                Bukkit.getScheduler().runTaskLater(OraxenPlugin.get(), () ->
+                FoliaUtil.scheduler.runTaskLater(player.getLocation(), () ->
                         storagePDC.set(STORAGE_KEY, DataType.ITEM_STACK_ARRAY, gui.getInventory().getContents()), 3L);
             }
         });
@@ -288,7 +289,7 @@ public class StorageMechanic {
         // Slight delay to catch stacks sometimes moving too fast
         gui.setDefaultClickAction(event -> {
             if (event.getCursor() != null && event.getCursor().getType() != Material.AIR || event.getCurrentItem() != null) {
-                Bukkit.getScheduler().runTaskLater(OraxenPlugin.get(), () ->
+                FoliaUtil.scheduler.runTaskLater(block.getLocation(), () ->
                         storagePDC.set(STORAGE_KEY, DataType.ITEM_STACK_ARRAY, gui.getInventory().getContents()), 3L);
             }
         });
@@ -320,7 +321,7 @@ public class StorageMechanic {
         // Slight delay to catch stacks sometimes moving too fast
         gui.setDefaultClickAction(event -> {
             if (event.getCursor() != null && event.getCursor().getType() != Material.AIR || event.getCurrentItem() != null) {
-                Bukkit.getScheduler().runTaskLater(OraxenPlugin.get(), () ->
+                FoliaUtil.scheduler.runTaskLater(baseEntity.getLocation(), () ->
                         storagePDC.set(STORAGE_KEY, DataType.ITEM_STACK_ARRAY, gui.getInventory().getContents()), 3L);
             }
         });

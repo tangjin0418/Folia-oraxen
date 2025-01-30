@@ -10,6 +10,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.tjdev.util.tjpluginutil.spigot.FoliaUtil;
 
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class FurniturePaperListener implements Listener {
         List<Block> barriers = mechanic.getBarriers().stream().map(b -> entity.getLocation().add(b.toLocation(entity.getWorld())).getBlock()).toList();
         // If the baseEntity does not exist, it means furniture is broken
         // and interaction entity was left behind, or furniture is outdated
-        Bukkit.getScheduler().runTaskLater(OraxenPlugin.get(), () -> {
+        FoliaUtil.scheduler.runTaskLater(entity, () -> {
             if (baseEntity == null) {
                 if (!entity.isDead()) entity.remove();
                 barriers.forEach(b -> {
