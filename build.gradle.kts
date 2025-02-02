@@ -95,7 +95,7 @@ allprojects {
         implementation("org.bstats:bstats-bukkit:3.0.0")
         implementation("org.glassfish:javax.json:1.1.4")
         implementation("io.th0rgal:protectionlib:1.8.0")
-        implementation("com.github.stefvanschie.inventoryframework:IF:0.10.12")
+        implementation("com.github.stefvanschie.inventoryframework:IF:0.10.19-Folia")
         implementation("com.jeff-media:custom-block-data:2.2.3-Folia")
         implementation("com.jeff-media:MorePersistentDataTypes:2.4.0")
         implementation("com.jeff-media:persistent-data-serializer:1.0")
